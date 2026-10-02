@@ -158,7 +158,7 @@ select{font:inherit;font-size:12.5px;padding:4px 6px;border-radius:6px;border:1p
 <div class="toast" id="toast" hidden></div>
 
 <script type="application/json" id="tracker-data">{
- "updated": "2026-10-02T02:10:00Z",
+ "updated": "2026-10-02T03:05:37Z",
  "jobs": [
   {
    "id": "arkhya-ui-dev",
@@ -420,6 +420,18 @@ select{font:inherit;font-size:12.5px;padding:4px 6px;border-radius:6px;border:1p
     "US citizenship / clearance",
     "Agentic AI / Angular Signals"
    ]
+  },
+  {
+   "at": "2026-10-02T03:05:37Z",
+   "mode": "Cloud",
+   "reviewed": 25,
+   "ready": 0,
+   "summary": "No new Angular jobs; most job sites blocked in cloud",
+   "gaps": [
+    "Onsite/hybrid outside Illinois",
+    "Java / .NET back end as main skill",
+    "US citizenship / clearance"
+   ]
   }
  ]
 }</script>
@@ -542,7 +554,7 @@ async function save(){
   const json=JSON.stringify(DATA,null,1).replace(/</g,"\\u003c");
   const body=TEMPLATE.replace(/(<script type="application\/json" id="tracker-data">)[\s\S]*?(<\/script>)/, (m,a,b)=>a+json+b);
   const reset=document.head.querySelector("style")?.textContent||RESET;
-  const doc='<!doctype html><html><head><meta charset=utf8><meta name="robots" content="noindex,nofollow"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+reset+'</style></head><body>'+body+'</body></html>';
+  const doc='<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+reset+'</style></head><body>'+body+'</body></html>';
   try{ await art.publish(doc); toast("Saved"); }
   catch(err){
     const c=err&&err.code;
