@@ -1,0 +1,63 @@
+# Non-personal run settings. Candidate data lives in config/profile.yaml (gitignored).
+
+models:
+  orchestrator: claude-opus-5-5   # planning / judgement-heavy steps (screening, tailoring)
+  worker: claude-opus-5-5         # search + extraction sub-agents (override with a cheaper model if wanted)
+  effort: high                    # low | medium | high | xhigh | max
+  refusal_fallbacks: true         # server-side fallback on safety declines
+
+window:
+  posted_within_days: 7
+  history_lookback_days: 90
+
+thresholds:
+  ready: 70          # tailor + mark ready
+  fyi: 50            # list without a resume
+
+keywords:
+  - Angular Developer
+  - Senior Angular Developer
+  - Angular Frontend Developer
+  - Angular Front End Engineer
+  - Angular UI Developer
+  - Angular Engineer
+
+# Public JSON feeds queried directly (no LLM needed to fetch).
+feeds:
+  workable: {enabled: true, url: "https://jobs.workable.com/api/v1/jobs?query=angular"}
+  remoteok: {enabled: true, url: "https://remoteok.com/api?tag=angular"}
+  jobicy:   {enabled: true, url: "https://jobicy.com/api/v2/remote-jobs?count=50&tag=angular&geo=usa"}
+  himalayas: {enabled: true, url: "https://himalayas.app/jobs/api?limit=100"}
+  # Company ATS boards: add board tokens you want polled every run.
+  greenhouse_boards: []   # e.g. ["acme"] -> boards-api.greenhouse.io/v1/boards/acme/jobs?content=true
+  lever_boards: []        # e.g. ["acme"] -> api.lever.co/v0/postings/acme?mode=json
+  ashby_boards: []        # e.g. ["acme"] -> api.ashbyhq.com/posting-api/job-board/acme
+
+# Sites searched by an LLM web-search sub-agent (one sub-agent per site).
+web_sites:
+  - name: Dice
+    hints: "dice.com/jobs?q=angular&filters.postedDate=SEVEN ; Remote US and Arlington Heights IL 25 mi"
+  - name: Built In
+    hints: "builtin.com/jobs/remote?search=angular&daysSinceUpdated=7 and builtinchicago.org/jobs?search=angular&daysSinceUpdated=7"
+  - name: SimplyHired
+    hints: "simplyhired.com/search?q=angular&t=7 ; Remote, and Arlington Heights IL 25 mi"
+  - name: Wellfound
+    hints: "wellfound.com/role/r/angular-developer ; remote US or Chicago"
+  - name: Arc.dev
+    hints: "arc.dev/remote-jobs/angular"
+  - name: Company ATS boards
+    hints: "site:boards.greenhouse.io OR site:jobs.lever.co OR site:jobs.ashbyhq.com OR site:apply.workable.com OR site:breezy.hr OR site:jobs.smartrecruiters.com OR site:applytojob.com Angular developer remote"
+
+dashboard:
+  artifact_url: "https://claude.ai/artifact/BhuvF2o7RyZ72j63mFdGXR"
+  html_file: index.html        # repo-root GitHub Pages copy of the dashboard
+
+github:
+  remote: origin
+  branch: main
+  publish_file: index.html     # the ONLY file a scheduled run may commit
+  commit_message: "Update job dashboard"
+
+email:
+  to: anilakshada08@gmail.com
+  subject_prefix: "Job Apply Update"

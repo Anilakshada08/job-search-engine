@@ -1,0 +1,35 @@
+# Copy to config/profile.yaml (gitignored) and fill in from the angular-job-apply skill.
+# This is the ONLY source of truth for resume content. Agents never invent beyond it.
+name: Candidate Name
+headline: Senior Angular Developer | Front-End Architect | 7+ years
+email: candidate@example.com
+phone: "+1 000-000-0000"
+home_location: Arlington Heights, IL
+chicago_metro_radius_miles: 25
+work_authorization: Green Card (no sponsorship needed)
+
+primary_skills: [Angular, TypeScript, RxJS, NgRx, Angular Material, Angular CLI]
+secondary_skills: [JavaScript (ES6+), HTML5, CSS3/SCSS, Jest, Cypress]
+domains: [banking/fintech, healthcare]
+
+experience:
+  - title: Senior Angular Developer
+    company: Example Corp
+    client: Example Client
+    dates: Jan 2020 - Present
+    tech: [Angular 16, TypeScript, RxJS, NgRx]
+    bullets:
+      - Built enterprise Angular apps with NgRx state management.
+
+education:
+  - Bachelor of Engineering - Information Technology, Example College, 2013
+
+saved_answers:
+  years_angular: 7
+  years_javascript: 7
+  years_typescript: 7
+  authorized_to_work_us: "Yes - Green Card"
+  requires_sponsorship: "No"
+
+# Employers (and their brands/clients) that must never be prepared or applied to.
+excluded_employers: [Example Current Employer, Example Current Client]
