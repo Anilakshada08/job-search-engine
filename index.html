@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Akshada's Angular Job Hunt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single working column — status strip, action queue, full tracker, run history — read top to bottom, scanned left to right. */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --ink:#18202b; --muted:#5d6878; --line:#dfe3ea;
+  --accent:#b3264a; --accent-soft:#f6e3e8;
+  --good:#1f7a4d; --good-soft:#e1f2e8; --warn:#a15c00; --warn-soft:#fbeed7;
+  --info:#2457a6; --info-soft:#e2ebf8; --bad:#8f2f2f; --bad-soft:#f6e1e1; --idle:#6b7280; --idle-soft:#eceef2;
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#11151b; --surface:#181e26; --ink:#e7ebf1; --muted:#9aa5b4; --line:#2a323d;
+  --accent:#ec6f8f; --accent-soft:#3a1f28;
+  --good:#5fc690; --good-soft:#173326; --warn:#e5a54a; --warn-soft:#3a2b14;
+  --info:#7ea8ec; --info-soft:#1b2a42; --bad:#e58b8b; --bad-soft:#3b1f1f; --idle:#9aa1ad; --idle-soft:#262c35;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151b; --surface:#181e26; --ink:#e7ebf1; --muted:#9aa5b4; --line:#2a323d;
+  --accent:#ec6f8f; --accent-soft:#3a1f28;
+  --good:#5fc690; --good-soft:#173326; --warn:#e5a54a; --warn-soft:#3a2b14;
+  --info:#7ea8ec; --info-soft:#1b2a42; --bad:#e58b8b; --bad-soft:#3b1f1f; --idle:#9aa1ad; --idle-soft:#262c35;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14.5px;line-height:1.5}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:20px;padding-block:28px 56px;display:grid;gap:28px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0}
+h1{font-size:clamp(26px,4vw,36px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:19px;font-weight:700}
+.eyebrow{font-size:11.5px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+.sub{color:var(--muted);margin:6px 0 0;max-width:68ch}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px}
+.lastrun{font-size:13px;color:var(--muted);text-align:right}
+.lastrun b{color:var(--ink);font-weight:600}
+
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.kpi{padding:16px 18px;display:grid;gap:2px;border-left:1px solid var(--line)}
+.kpi:first-child{border-left:0}
+.kpi .v{font-family:var(--f-display);font-size:34px;font-weight:700;line-height:1.1}
+.kpi .l{font-size:13px;color:var(--muted)}
+.kpi.hot .v{color:var(--accent)}
+@media (max-width:640px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi:nth-child(3){border-left:0}.kpi:nth-child(n+3){border-top:1px solid var(--line)}}
+
+section{display:grid;gap:12px}
+.sechead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px}
+.queue{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:10px;min-width:0}
+.card .co{font-size:12.5px;color:var(--muted);font-weight:600}
+.card .role{font-family:var(--f-display);font-size:17px;font-weight:600;line-height:1.25;margin-top:2px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12.5px;color:var(--muted)}
+.risk{font-size:13px;border-top:1px dashed var(--line);padding-top:8px}
+.risk b{font-weight:600}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+a.btn{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:13px;color:var(--surface);background:var(--accent);padding:7px 12px;border-radius:7px;text-decoration:none}
+a.btn:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a.plain{color:var(--info);font-weight:500;text-decoration:none}
+a.plain:hover{text-decoration:underline}
+
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-ready{color:var(--info);background:var(--info-soft)}
+.s-needs{color:var(--warn);background:var(--warn-soft)}
+.s-applied{color:var(--good);background:var(--good-soft)}
+.s-interview{color:var(--accent);background:var(--accent-soft)}
+.s-rejected{color:var(--bad);background:var(--bad-soft)}
+.s-closed{color:var(--idle);background:var(--idle-soft)}
+
+.match{display:flex;align-items:center;gap:8px;min-width:120px}
+.bar{flex:1;height:6px;border-radius:3px;background:var(--idle-soft);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ink);opacity:.75}
+.match .num{font-size:12.5px;width:3.2ch;text-align:right}
+
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:12.5px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chip .num{opacity:.7;margin-left:4px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:820px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td .t{font-weight:600}
+td .c{color:var(--muted);font-size:12.5px}
+td.small{font-size:12.5px;color:var(--muted)}
+select{font:inherit;font-size:12.5px;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+
+.two{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:grid;gap:12px;min-width:0}
+.chart svg{width:100%;height:auto;display:block}
+.runlog{display:grid;gap:0;max-height:300px;overflow:auto}
+.run{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.run:last-child{border-bottom:0}
+.run .when{font-family:var(--f-mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.run .what{min-width:0}
+.mode{font-size:11px;font-weight:600;padding:1px 7px;border-radius:5px;background:var(--idle-soft);color:var(--idle)}
+.mode.chrome{background:var(--good-soft);color:var(--good)}
+.mode.blocked{background:var(--bad-soft);color:var(--bad)}
+.gaps{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.gaps li{display:grid;grid-template-columns:1fr auto;gap:10px;font-size:13.5px}
+.gaps .num{color:var(--muted)}
+.empty{border:1px dashed var(--line);border-radius:10px;padding:22px;color:var(--muted);text-align:center;background:var(--surface)}
+.note{font-size:12.5px;color:var(--muted)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:8px 14px;border-radius:8px;font-size:13px}
+@media (prefers-reduced-motion:no-preference){.card,.kpi{transition:border-color .2s}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="eyebrow">Angular job search · Remote US + Chicago metro</div>
+      <h1>Akshada's Angular Job Hunt</h1>
+      <p class="sub">Every job the daily run has found, prepared or applied to, plus what each run searched. Updated after every scheduled run. </p>
+    </div>
+    <div class="lastrun" id="lastrun">No runs logged yet</div>
+  </header>
+
+  <div class="kpis" id="kpis" aria-label="Summary">
+    <div class="kpi"><span class="v num">–</span><span class="l">Applied</span></div>
+    <div class="kpi hot"><span class="v num">–</span><span class="l">Ready to apply</span></div>
+    <div class="kpi"><span class="v num">–</span><span class="l">Needs action</span></div>
+    <div class="kpi"><span class="v num">–</span><span class="l">Interviews</span></div>
+  </div>
+
+  <section>
+    <div class="sechead"><h2>Apply next</h2><span class="note">Resumes are attached to the matching Job Apply Update email</span></div>
+    <div class="queue" id="queue"><div class="empty">Jobs that are ready for Akshada will show here.</div></div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>All tracked jobs</h2><div class="filters" id="filters" role="group" aria-label="Filter by status"></div></div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Job</th><th>Status</th><th>Match</th><th>Found</th><th>Source</th><th>Notes</th></tr></thead>
+        <tbody id="rows"><tr><td colspan="6" class="small">No jobs yet. The next scheduled run adds what it finds.</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="two">
+    <section class="panel">
+      <div class="sechead"><h2>Run history</h2><span class="note" id="runcount"></span></div>
+      <div class="chart" id="chart"></div>
+      <div class="runlog" id="runlog"></div>
+    </section>
+    <section class="panel">
+      <h2>Recurring skill gaps</h2>
+      <p class="note" style="margin:0">Why postings were skipped or scored lower, counted across runs.</p>
+      <ul class="gaps" id="gaps"><li class="note">Appears after the first run is logged.</li></ul>
+    </section>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script type="application/json" id="tracker-data">{
+ "updated": "2026-10-02T02:10:00Z",
+ "jobs": [
+  {
+   "id": "arkhya-ui-dev",
+   "company": "Arkhya Tech Inc.",
+   "role": "Javascript Developer (UI Developer - Angular)",
+   "location": "Remote (US)",
+   "type": "Full-time",
+   "status": "Applied",
+   "match": 100,
+   "found": "2026-09-30",
+   "source": "LinkedIn",
+   "applyVia": "LinkedIn Easy Apply",
+   "link": "https://www.linkedin.com/jobs/view/4473923635/",
+   "resume": "Akshada_Vaidya_ArkhyaTech_UI_Developer.pdf",
+   "notes": "Submitted Sep 30, confirmation received. Recruiter: Shubham Nikam."
+  },
+  {
+   "id": "citiustech-ui-architect",
+   "company": "CitiusTech",
+   "role": "UI Architect, Angular",
+   "location": "Remote (US)",
+   "type": "Full-time",
+   "status": "Applied",
+   "match": null,
+   "found": "2026-09-30",
+   "source": "LinkedIn",
+   "link": "https://www.linkedin.com/jobs/view/4473952802/",
+   "notes": "Applied Sep 30."
+  },
+  {
+   "id": "cybercoders-sr-frontend",
+   "company": "CyberCoders",
+   "role": "Sr. Frontend Software Engineer",
+   "location": "Remote (US)",
+   "type": "Full-time",
+   "status": "Applied",
+   "match": null,
+   "found": "2026-09-30",
+   "source": "LinkedIn",
+   "notes": "Applied Sep 30."
+  },
+  {
+   "id": "evercommerce-everwell-fe",
+   "company": "EverCommerce",
+   "role": "EverWell Front End Engineer",
+   "location": "Remote (US)",
+   "type": "Full-time",
+   "status": "Needs Akshada",
+   "match": 80,
+   "found": "2026-09-30",
+   "source": "LinkedIn",
+   "applyVia": "Company site",
+   "link": "https://www.linkedin.com/jobs/view/4471465404/",
+   "risk": "The company site emails Akshada a one-time code before the form opens. Gaps: PL/SQL, feature flagging.",
+   "notes": "Also posted on Dice."
+  },
+  {
+   "id": "vensit-ui-dev",
+   "company": "VensIT Corp",
+   "role": "UI Developer",
+   "location": "Remote (US)",
+   "type": "Contract, 12 mo, $50-60/hr",
+   "status": "Ready",
+   "match": 95,
+   "found": "2026-10-01",
+   "source": "Dice",
+   "applyVia": "Dice (account needed)",
+   "link": "https://www.dice.com/job-detail/91548a65-ce20-41a3-a002-6c7902b669e6",
+   "resume": "Akshada_Vaidya_VensIT_UI_Developer.pdf",
+   "risk": "End client not named. Confirm it isn't Capgemini or Capital One.",
+   "notes": "Recruiter: Sunitha Maddineni (Dice 10432368)."
+  },
+  {
+   "id": "ceresti-sr-angular",
+   "company": "Ceresti Health",
+   "role": "Senior Angular Frontend Developer",
+   "location": "Remote (US)",
+   "type": "Full-time",
+   "status": "Ready",
+   "match": 86,
+   "found": "2026-10-01",
+   "source": "Breezy (company site)",
+   "applyVia": "Company site, no account",
+   "link": "https://ceresti-health.breezy.hr/p/d42153f5d0bc-senior-angular-frontend-developer",
+   "resume": "Akshada_Vaidya_CerestiHealth_Senior_Angular_Frontend_Developer.pdf",
+   "risk": "Asks 8+ yrs front end and 5+ yrs Angular. Not in the company's current feed, so it may be closing.",
+   "notes": "Healthcare."
+  },
+  {
+   "id": "smartlocating-sr-fe",
+   "company": "Smartlocating Corporation",
+   "role": "Sr. Front End Web Developer",
+   "location": "Remote",
+   "type": "Full-time",
+   "status": "Ready",
+   "match": 90,
+   "found": "2026-10-01",
+   "source": "SimplyHired",
+   "applyVia": "SimplyHired redirect",
+   "link": "https://www.simplyhired.com/job/NP5CVbwGXkmCUtCdVWrBPjfrBV-JD_AJ5hJslHfY-sW2TRx3f0m2MA",
+   "resume": "Akshada_Vaidya_Smartlocating_Sr_Front_End_Web_Developer.pdf",
+   "risk": "No posting date shown; may be a standing listing.",
+   "notes": "Asks 6+ yrs front end, 3+ Angular."
+  },
+  {
+   "id": "tms-sr-angular-agentic",
+   "company": "TMS LLC",
+   "role": "Senior Angular Frontend Developer - Agentic AI",
+   "location": "Remote (US)",
+   "type": "Contract, long term",
+   "status": "Ready",
+   "match": 70,
+   "found": "2026-10-02",
+   "source": "SmartRecruiters (company site)",
+   "applyVia": "SmartRecruiters",
+   "link": "https://jobs.smartrecruiters.com/TMSLLC/744000144820669-senior-angular-frontend-developer-agentic-ai-remote-long-term",
+   "resume": "Akshada_Vaidya_TMS_Senior_Angular_Frontend_Developer.pdf",
+   "risk": "Asks 8-10 yrs and agentic AI. End client not named. Posting date unclear.",
+   "notes": "Cloud browser couldn't open the site; apply from Chrome."
+  }
+ ],
+ "runs": [
+  {
+   "at": "2026-10-01T03:16:00Z",
+   "mode": "Chrome",
+   "reviewed": 7,
+   "ready": 0,
+   "summary": "Submitted Arkhya Tech via LinkedIn Easy Apply",
+   "gaps": [
+    "8-10+ years required",
+    "Java / .NET back end as main skill",
+    "UX designer role"
+   ]
+  },
+  {
+   "at": "2026-10-01T03:34:00Z",
+   "mode": "Chrome",
+   "reviewed": 25,
+   "ready": 1,
+   "summary": "EverCommerce needs Akshada's email code",
+   "gaps": [
+    "React-first or React/Angular equal"
+   ]
+  },
+  {
+   "at": "2026-10-01T03:37:00Z",
+   "mode": "Blocked",
+   "reviewed": 0,
+   "ready": 0,
+   "summary": "Stopped: Chrome not reachable",
+   "gaps": []
+  },
+  {
+   "at": "2026-10-01T03:49:00Z",
+   "mode": "Cloud",
+   "reviewed": 35,
+   "ready": 1,
+   "summary": "VensIT UI Developer ready (Dice)",
+   "gaps": [
+    "US citizenship / clearance",
+    "Java / .NET back end as main skill",
+    "React-first or React/Angular equal"
+   ]
+  },
+  {
+   "at": "2026-10-01T03:52:00Z",
+   "mode": "Cloud",
+   "reviewed": 50,
+   "ready": 3,
+   "summary": "VensIT, Ceresti Health, Smartlocating ready",
+   "gaps": [
+    "8-10+ years required",
+    "Java / .NET back end as main skill"
+   ]
+  },
+  {
+   "at": "2026-10-01T05:25:00Z",
+   "mode": "Blocked",
+   "reviewed": 0,
+   "ready": 0,
+   "summary": "Stopped: Chrome not reachable",
+   "gaps": []
+  },
+  {
+   "at": "2026-10-01T11:26:00Z",
+   "mode": "Blocked",
+   "reviewed": 0,
+   "ready": 0,
+   "summary": "Stopped: Chrome not reachable",
+   "gaps": []
+  },
+  {
+   "at": "2026-10-01T18:04:00Z",
+   "mode": "Cloud",
+   "reviewed": 40,
+   "ready": 0,
+   "summary": "No new Angular jobs",
+   "gaps": [
+    "Java / .NET back end as main skill",
+    "US citizenship / clearance"
+   ]
+  },
+  {
+   "at": "2026-10-01T18:13:00Z",
+   "mode": "Cloud",
+   "reviewed": 40,
+   "ready": 0,
+   "summary": "No new Angular jobs",
+   "gaps": [
+    "Java / .NET back end as main skill",
+    "8-10+ years required",
+    "US citizenship / clearance"
+   ]
+  },
+  {
+   "at": "2026-10-01T18:17:00Z",
+   "mode": "Cloud",
+   "reviewed": 45,
+   "ready": 0,
+   "summary": "No new Angular jobs",
+   "gaps": [
+    "Java / .NET back end as main skill",
+    "React-first or React/Angular equal",
+    "US citizenship / clearance"
+   ]
+  },
+  {
+   "at": "2026-10-01T18:46:00Z",
+   "mode": "Chrome",
+   "reviewed": 320,
+   "ready": 0,
+   "summary": "LinkedIn as Akshada + Dice + Indeed; nothing new",
+   "gaps": [
+    "React-first or React/Angular equal",
+    "Java / .NET back end as main skill",
+    "Onsite/hybrid outside Illinois"
+   ]
+  },
+  {
+   "at": "2026-10-01T23:28:00Z",
+   "mode": "Cloud",
+   "reviewed": 100,
+   "ready": 0,
+   "summary": "No new Angular jobs",
+   "gaps": [
+    "Onsite/hybrid outside Illinois",
+    "Java / .NET back end as main skill",
+    "React-first or React/Angular equal"
+   ]
+  },
+  {
+   "at": "2026-10-02T02:10:00Z",
+   "mode": "Cloud",
+   "reviewed": 180,
+   "ready": 1,
+   "summary": "First 7-day run: TMS LLC Senior Angular Frontend Developer ready",
+   "gaps": [
+    "Java / .NET back end as main skill",
+    "US citizenship / clearance",
+    "Agentic AI / Angular Signals"
+   ]
+  }
+ ]
+}</script>
+<script>
+const STATUSES = [
+  ["Ready","s-ready"],["Needs Akshada","s-needs"],["Applied","s-applied"],
+  ["Interview","s-interview"],["Rejected","s-rejected"],["Closed","s-closed"]
+];
+const cls = s => (STATUSES.find(x=>x[0]===s)||["","s-closed"])[1];
+const $ = id => document.getElementById(id);
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmtDate = d => { if(!d) return "–"; const x=new Date(d+"T12:00:00"); return isNaN(x)?esc(d):x.toLocaleDateString(undefined,{month:"short",day:"numeric"}); };
+
+const TEMPLATE=document.body.innerHTML;
+const RESET=":root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif;background:#fafafa}img{max-width:100%}[hidden]{display:none!important}";
+let DATA={}; try{ DATA=JSON.parse(document.getElementById("tracker-data").textContent); }catch(e){ DATA={jobs:[],runs:[]}; }
+let jobs=[], runs=[], filter="All", canWrite=false, art=null, saveTimer=null;
+
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.hidden=false; clearTimeout(toast.h); toast.h=setTimeout(()=>t.hidden=true,2200); }
+
+function matchCell(m){
+  if(m==null) return '<span class="c">–</span>';
+  return `<div class="match"><div class="bar"><i style="width:${Math.max(0,Math.min(100,m))}%"></i></div><span class="num">${m}%</span></div>`;
+}
+
+function render(){
+  const count = s => jobs.filter(j=>j.status===s).length;
+  const k = $("kpis").querySelectorAll(".v");
+  k[0].textContent = count("Applied")+count("Interview")+count("Rejected");
+  k[1].textContent = count("Ready");
+  k[2].textContent = count("Needs Akshada");
+  k[3].textContent = count("Interview");
+
+  // queue
+  const q = jobs.filter(j=>j.status==="Ready"||j.status==="Needs Akshada")
+    .sort((a,b)=>(b.found||"").localeCompare(a.found||"")||(b.match||0)-(a.match||0));
+  $("queue").innerHTML = q.length ? q.map(j=>`
+    <article class="card">
+      <div class="row"><span class="pill ${cls(j.status)}">${esc(j.status)}</span>${matchCell(j.match)}</div>
+      <div><div class="co">${esc(j.company)}</div><div class="role">${esc(j.role)}</div></div>
+      <div class="meta"><span>${esc(j.location)}</span><span>${esc(j.type)}</span><span>Found ${fmtDate(j.found)}</span><span>Via ${esc(j.applyVia||j.source)}</span></div>
+      ${j.risk?`<div class="risk"><b>Watch for:</b> ${esc(j.risk)}</div>`:""}
+      <div class="row">${j.link?`<a class="btn" href="${esc(j.link)}" target="_blank" rel="noopener">Open posting ↗</a>`:"<span></span>"}<span class="note mono">${esc(j.resume||"")}</span></div>
+    </article>`).join("") : '<div class="empty">Nothing waiting. New matches from the next run land here.</div>';
+
+  // filters
+  const opts = ["All",...STATUSES.map(s=>s[0])];
+  $("filters").innerHTML = opts.map(o=>{
+    const n = o==="All"?jobs.length:count(o);
+    if(o!=="All" && !n && filter!==o) return "";
+    return `<button class="chip" type="button" data-f="${o}" aria-pressed="${filter===o}">${o}<span class="num">${n}</span></button>`;
+  }).join("");
+
+  // table
+  const rows = jobs.filter(j=>filter==="All"||j.status===filter)
+    .sort((a,b)=>(b.found||"").localeCompare(a.found||""));
+  $("rows").innerHTML = rows.length ? rows.map(j=>`
+    <tr>
+      <td><div class="t">${j.link?`<a class="plain" href="${esc(j.link)}" target="_blank" rel="noopener">${esc(j.role)}</a>`:esc(j.role)}</div><div class="c">${esc(j.company)} · ${esc(j.location)}</div></td>
+      <td>${canWrite?`<select id="st-${esc(j.id)}" data-id="${esc(j.id)}" aria-label="Status for ${esc(j.company)}">${STATUSES.map(s=>`<option${s[0]===j.status?" selected":""}>${s[0]}</option>`).join("")}</select>`:`<span class="pill ${cls(j.status)}">${esc(j.status)}</span>`}</td>
+      <td>${matchCell(j.match)}</td>
+      <td class="small mono">${fmtDate(j.found)}</td>
+      <td class="small">${esc(j.source)}</td>
+      <td class="small">${esc(j.notes||"")}</td>
+    </tr>`).join("") : `<tr><td colspan="6" class="small">No jobs with this status.</td></tr>`;
+
+  renderRuns();
+}
+
+function renderRuns(){
+  const r = [...runs].sort((a,b)=>(a.at||"").localeCompare(b.at||""));
+  $("runcount").textContent = r.length ? `${r.length} runs logged` : "";
+  if(!r.length){ $("chart").innerHTML='<div class="empty">Run history appears after the next run.</div>'; $("runlog").innerHTML=""; $("lastrun").textContent="No runs logged yet"; renderGaps(); return; }
+  const last = r[r.length-1];
+  $("lastrun").innerHTML = `Last updated <b>${new Date(last.at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</b><br>${esc(last.mode)} · ${last.ready||0} ready`;
+
+  // chart: postings reviewed per run (bars) with ready count marked
+  const W=560,H=170,P={l:30,r:8,t:12,b:26};
+  const maxV = Math.max(5,...r.map(x=>x.reviewed||0));
+  const step = Math.ceil(maxV/4/10)*10 || 5; const top = step*4;
+  const bw = (W-P.l-P.r)/r.length;
+  const y = v => P.t + (H-P.t-P.b)*(1-v/top);
+  let g = "";
+  for(let i=0;i<=4;i++){ const v=step*i; g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${P.l-6}" y="${y(v)+4}" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${v}</text>`; }
+  r.forEach((x,i)=>{
+    const cx = P.l+bw*i+bw/2, w=Math.max(4,bw*0.55), v=x.reviewed||0;
+    g+=`<rect x="${cx-w/2}" y="${y(v)}" width="${w}" height="${y(0)-y(v)}" rx="2" fill="${x.mode==="Blocked"?"var(--bad)":"var(--muted)"}" opacity="${x.mode==="Blocked"?0.5:0.35}"><title>${esc(x.summary)}: ${v} postings reviewed, ${x.ready||0} ready</title></rect>`;
+    if(x.ready) g+=`<circle cx="${cx}" cy="${y(v)-8}" r="5" fill="var(--accent)"/><text x="${cx}" y="${y(v)-15}" text-anchor="middle" font-size="10" font-weight="600" fill="var(--accent)" font-family="IBM Plex Mono,monospace">${x.ready}</text>`;
+  });
+  const days=[...new Set(r.map(x=>(x.at||"").slice(0,10)))];
+  days.forEach(d=>{ const idx=r.findIndex(x=>(x.at||"").startsWith(d)); const cx=P.l+bw*idx+2; g+=`<text x="${cx}" y="${H-8}" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono,monospace">${fmtDate(d)}</text>`; });
+  $("chart").innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Postings reviewed per run, with ready jobs marked">${g}</svg><div class="note">Grey bars: about how many postings each run reviewed. Runs that couldn't start have no bar. Dot: jobs ready to apply from that run.</div>`;
+
+  $("runlog").innerHTML = [...r].reverse().map(x=>`
+    <div class="run"><span class="when">${new Date(x.at).toLocaleString(undefined,{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</span>
+    <span class="what">${esc(x.summary||x.label)}</span>
+    <span class="mode ${x.mode==="Chrome"?"chrome":x.mode==="Blocked"?"blocked":""}">${esc(x.mode)}</span></div>`).join("");
+  renderGaps();
+}
+
+function renderGaps(){
+  const tally={};
+  runs.forEach(x=>(x.gaps||[]).forEach(gp=>tally[gp]=(tally[gp]||0)+1));
+  const list=Object.entries(tally).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  if(!list.length) return;
+  $("gaps").innerHTML = list.map(([k,v])=>`<li><span>${esc(k)}</span><span class="num">${v} run${v>1?"s":""}</span></li>`).join("");
+}
+
+$("filters").addEventListener("click",e=>{ const b=e.target.closest("[data-f]"); if(!b) return; filter=b.dataset.f; render(); });
+$("rows").addEventListener("change",e=>{
+  const s=e.target.closest("select[data-id]"); if(!s||!art) return;
+  const j=jobs.find(x=>x.id===s.dataset.id); if(!j) return;
+  j.status=s.value; j.statusChanged=new Date().toISOString().slice(0,10);
+  render(); toast("Saving…");
+  clearTimeout(saveTimer); saveTimer=setTimeout(save,1200);
+});
+
+async function save(){
+  DATA.jobs=jobs; DATA.runs=runs;
+  const json=JSON.stringify(DATA,null,1).replace(/</g,"\\u003c");
+  const body=TEMPLATE.replace(/(<script type="application\/json" id="tracker-data">)[\s\S]*?(<\/script>)/, (m,a,b)=>a+json+b);
+  const reset=document.head.querySelector("style")?.textContent||RESET;
+  const doc='<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'+reset+'</style></head><body>'+body+'</body></html>';
+  try{ await art.publish(doc); toast("Saved"); }
+  catch(err){
+    const c=err&&err.code;
+    if(c==="not_granted"||c==="not_writer"){ art=null; canWrite=false; render(); toast("You can view this tracker but not change it"); }
+    else if(c!=="conflict") toast("Couldn't save. Try again in a moment.");
+  }
+}
+
+jobs=DATA.jobs||[]; runs=DATA.runs||[]; render();
+(async()=>{
+  try{ art = await window.claude?.use?.("artifact"); }catch(e){ art=null; }
+  if(art){ canWrite=true; render(); }
+})();
+</script>
+
+</body>
+</html>
