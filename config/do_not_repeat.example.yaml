@@ -1,0 +1,12 @@
+# Copy to config/do_not_repeat.yaml (gitignored). Jobs that are ALWAYS on the do-not-repeat list,
+# in addition to what the history agent finds in Gmail and the dashboard.
+jobs:
+  - company: Example Co
+    title: Senior Angular Developer
+    link: ""
+    date: "2026-09-30"
+    status: Submitted
+# Jobs already re-evaluated under the 7-day window; they stay skipped.
+reevaluated_skips:
+  - company: Example Co
+    reason: DFW-only

@@ -1,0 +1,26 @@
+# --- Personal data: NEVER commit (this repository is public) ---
+config/profile.yaml
+config/do_not_repeat.yaml
+config/*.local.*
+.env
+credentials.json
+token.json
+secrets/
+
+# Run outputs: tailored resumes, emails, run logs
+output/
+resumes/
+*.docx
+*.pdf
+*.eml
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+build/
+dist/
