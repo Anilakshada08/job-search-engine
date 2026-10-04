@@ -35,11 +35,34 @@ function Start-Tunnel {
     $p
 }
 
-# Adopt a server/tunnel that is already running (keeps the current public URL), start whatever is missing.
+function Test-PublicUrl {
+    # Quick tunnels can be expired by Cloudflare while cloudflared keeps running ("Tunnel not found"),
+    # so check the public URL itself, not just the process.
+    $line = Get-Content $urlFile -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $line) { return $false }
+    $url = ($line -split '\s+')[0].TrimEnd('/')
+    try {
+        $r = Invoke-WebRequest -Uri "$url/__dashboard_version" -UseBasicParsing -TimeoutSec 20
+        return $r.StatusCode -eq 200
+    } catch { return $false }
+}
+
+# Adopt a server/tunnel that is already running (keeps the current public URL), start whatever is missing,
+# and replace the tunnel if its public URL stops answering for ~3 minutes.
+$failures = 0
 while ($true) {
     $serverUp = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue
     if (-not $serverUp) { Start-Server | Out-Null; Start-Sleep -Seconds 2 }
     $tunnelUp = Get-Process cloudflared -ErrorAction SilentlyContinue
-    if (-not $tunnelUp) { Start-Tunnel | Out-Null }
+    if (-not $tunnelUp) {
+        Start-Tunnel | Out-Null; $failures = 0
+    } elseif ($serverUp) {
+        if (Test-PublicUrl) { $failures = 0 } else { $failures++ }
+        if ($failures -ge 6) {
+            Get-Process cloudflared -ErrorAction SilentlyContinue | Stop-Process -Force
+            Start-Sleep -Seconds 2
+            Start-Tunnel | Out-Null; $failures = 0
+        }
+    }
     Start-Sleep -Seconds 30
 }
