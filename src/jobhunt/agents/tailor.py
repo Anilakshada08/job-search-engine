@@ -31,7 +31,17 @@ Steps:
 5. matched_keywords = JD keywords present on your resume. match_percent = round(100 * matched /
    (matched + gaps)). Years: the candidate has 7 years of Angular/JavaScript/TypeScript; a JD asking
    for more is a gap, never inflate.
-6. risk = one short line on the main risk (e.g. "asks 10+ years", "contract via staffing agency")."""
+6. risk = one short line on the main risk (e.g. "asks 10+ years", "contract via staffing agency").
+
+WRITING STYLE: it must read like the candidate wrote it, not like generated text.
+- Plain verbs (built, fixed, set up, moved, wrote, cut). Never: spearheaded, leveraged, orchestrated,
+  seamless, robust, synergy, cutting-edge, dynamic, passionate, results-driven, "proven track record".
+- No em dashes. No bold or "label: description" bullets. No three-adjective lists.
+- Vary bullet length and shape: some short, some with a concrete detail (app name, team size, what
+  changed). Don't start every bullet with the same pattern or end every bullet with a result clause.
+- Keep the specifics from the base resume (ERAS, NIFAIS, Capital One, team sizes, 95% coverage).
+- Mirror at most a handful of the JD's exact phrases where they are true; never paste a list of JD
+  keywords into the summary. Summary: 2-4 plain sentences, no slogans."""
 
 
 class Tailored(TailoredResume):
@@ -159,6 +169,13 @@ class TailorAgent(Agent):
             else:
                 break
         render.render_docx(t, profile, docx)
+        # Prefer a Word-exported PDF: clean ATS text layer and ordinary metadata. Keep the
+        # ReportLab PDF when Word isn't available or its export runs past 2 pages.
+        word_pdf = pdf.with_suffix(".word.pdf")
+        if render.export_pdf_with_word(docx, word_pdf) and render.pdf_pages(word_pdf) <= 2:
+            word_pdf.replace(pdf)
+        else:
+            word_pdf.unlink(missing_ok=True)
         render.render_attachment_pdf(t, profile, att)
 
         missing = render.verify_keywords(pdf, t.matched_keywords)
